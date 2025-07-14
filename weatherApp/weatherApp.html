@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather App</title>
+    <style>
+        body {
+            margin: 0px;
+            padding: 0px;
+            height: 100vh;
+            font-weight: 100vw;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            background-color: black;
+            color: aliceblue;
+
+        }
+
+        #mainBox {
+            padding: 20px 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: row;
+            border-radius: 10px;
+            width: 40vw;
+            height: 70vh;
+            background-color: rgba(112, 112, 112, 0.993);
+            position: relative;
+
+        }
+
+        #featureBox {
+            padding: 20px;
+            width: 30%;
+            height: 60%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            background-color: rgb(252, 251, 250);
+            border-radius: 10px;
+            position: absolute;
+            z-index: 1;
+            color: black;
+
+        }
+
+        #input {
+            width: 100%;
+            border: none;
+            height: 2rem;
+            border-radius: 5px;
+            padding: 3px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: rgb(187, 183, 183);
+            color: black;
+        }
+
+
+
+        #submitBtn {
+            margin-top: 20px;
+            width: 100%;
+            height: 2.5rem;
+            border: none;
+            border-radius: 20px;
+            background-color: rgba(219, 158, 83, 0.897);
+        }
+
+        #resetBtn {
+            margin-top: 20px;
+            width: 100%;
+            height: 2.5rem;
+            border: none;
+            border-radius: 20px;
+            background-color: rgba(219, 97, 83, 0.897);
+
+        }
+
+        #weatherUpdateBox {
+            background-color: rgb(92, 171, 175);
+            padding: 20px;
+            width: 30%;
+            height: 60%;
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            flex-direction: column;
+            color: white;
+            position: absolute;
+            border-radius: 10px;
+            color: black;
+        }
+
+        #weatherImage {
+            width: 100%;
+            height: 30%;
+            border-image-repeat: repeat;
+            border-radius: 5px;
+        }
+
+
+        #message {
+            color: black;
+        }
+
+        #tempBox {
+            color: rgb(255, 255, 255);
+
+        }
+
+        #tempBox h1 {
+            text-shadow: 2px 2px 10px black;
+        }
+
+        #tempBox p {
+            color: rgb(0, 0, 0);
+            text-align: center;
+            font-weight: bolder;
+            text-decoration: underline;
+        }
+
+        #windHumidityBox {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 30px;
+        }
+
+        #windBox {
+            color: black;
+
+        }
+
+        #windBox h4,
+        p {
+            margin: 5px;
+            text-align: center;
+
+        }
+
+        #humidityBox {
+            color: black;
+
+        }
+
+        #humidityBox h4,
+        p {
+            margin: 5px;
+            text-align: center;
+
+        }
+
+        button:hover {
+            box-shadow: 0px 0px 5px rgb(0, 0, 0);
+        }
+
+
+        input:focus {
+            outline: none;
+        }
+    </style>
+</head>
+
+<body>
+    <h2>Weather App</h2>
+    <div id="mainBox">
+        <div id="featureBox">
+            <h3>Know Your City Weather</h3>
+            <div id="countries">
+                <input type="text" placeholder="Enter your city name" id="input" required name="input">
+            </div>
+            <button id="resetBtn" name="reset">Reset</button>
+            <button id="submitBtn" name="input">submit</button>
+        </div>
+        <div id="weatherUpdateBox">
+
+        </div>
+
+    </div>
+
+</body>
+<script>
+    const input = document.getElementById("input")
+    const weatherUpdateBox = document.getElementById("weatherUpdateBox")
+    const featureBox = document.getElementById("featureBox")
+    const resetBtn = document.querySelector("#resetBtn");
+    const submitBtn = document.querySelector("#submitBtn");
+
+    submitBtn.addEventListener("click", function (e) {
+        e.preventDefault();
+        weatherUpdateBox.style.left = "50%";
+        weatherUpdateBox.style.borderRadius = "0px 10px 10px 0px";
+        featureBox.style.right = "50%";
+        featureBox.style.borderRadius = "10px 0px 0px 10px";
+        weatherUpdateBox.textContent = "Fetching Required Data..."
+        if (!input.value) {
+            weatherUpdateBox.textContent = " Please Enter Any Indian City Name "
+
+        } else {
+            getData();
+
+        }
+
+    })
+
+    resetBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+        input.value = "";
+    })
+
+    async function getData() {
+
+        const weatherUrl = `https://api.openweathermap.org/data/2.5/weather?q=${input.value.trim()},in&appid=4a614f1a2609dca4fb00b84df24dac58`
+        let response = await fetch(weatherUrl);
+        let usefulData = await response.json();
+        console.log(usefulData);
+        if (usefulData.cod == 404) {
+            weatherUpdateBox.textContent = usefulData.message.toUpperCase();
+
+        } else {
+            let temperature = `${Math.round((usefulData.main.temp - 273.15))} °C`;
+            let cityName = usefulData.name;
+            let windSpeed = `${((usefulData.wind.speed) * (18 / 5)).toFixed(2)} km/h`;
+            let humidity = usefulData.main.humidity + "%";
+            weatherUpdateBox.innerHTML = `
+        
+                <img src="sun.jpg" alt="weatherImage" id="weatherImage">
+                <p id="message"> Mostly Sunny </p>
+                
+                <div id="tempBox">
+                    <h1> ${temperature} </h1>
+                    <p> ${cityName} </p>
+                </div>
+
+                <div id="windHumidityBox">
+                    <div id="windBox">
+                        <p> Wind Speed </p>
+                        <h4> ${windSpeed} </h4>
+                    </div>
+
+                    <div id="humidityBox">
+                        <p> Humidity </p>
+                        <h4> ${humidity} </h4>
+                    </div>
+                </div>
+            `
+
+        }
+
+    }
+
+
+</script>
+
+</html>
